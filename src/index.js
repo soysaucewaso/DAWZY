@@ -1,7 +1,23 @@
-const { app, BrowserWindow, screen } = require('electron');
+const { app, BrowserWindow, desktopCapturer, screen, ipcMain } = require('electron');
 const path = require('node:path');
 const { windowManager } = require('node-window-manager');
-
+const {existsSync} = require("fs");
+const {execFile} = require('child_process')
+ipcMain.handle('takeScreenshot', async () => {
+  const venvPython = process.platform === 'win32'
+  ? path.join(__dirname, 'venv', 'Scripts', 'python.exe')
+  : path.join(__dirname, 'venv', 'bin', 'python');
+  const pythonPath = existsSync(venvPython) ? venvPython : 'python3';
+  return new Promise((resolve, reject) => {
+    execFile(pythonPath, ['take_screenshot.py'], (error, stdout, stderr) => {
+      if (error) {
+        reject(`❌ Error: ${stderr}`);
+      } else {
+        resolve(`✅ Success: ${stdout}`);
+      }
+    });
+  });
+});
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
   app.quit();
@@ -23,13 +39,14 @@ function createChatbotWindow(dawBounds) {
   chatbotWindow = new BrowserWindow({
     x: x + width,
     y,
-    width: 300,
-    height,
+    width: 1000,
+    height: 700,
     frame: false,
     alwaysOnTop: true,
     transparent: false, // Set to true for overlay style
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+
     },
     show: false, // Start hidden, show when ready
   });

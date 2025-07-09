@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Hello World!</title>
-    <link rel="stylesheet" href="index.css" />
-  </head>
-  <body>
-    <h1>💖 Hello World!</h1>
-    <p>Welcome to your Electron application.</p>
-    <input id="chat-input" type="text" placeholder="Type a message..." />
-    <button id="send-btn">Send to Extension</button>
-    <script src="renderer.js"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Hello World!</title>
+  <link rel="stylesheet" href="index.css" />
+</head>
+
+<body>
+  <h1>💖 Hello World!</h1>
+  <p>Welcome to your Electron application.</p>
+  <input id="chat-input" type="text" placeholder="Type a message..." />
+  <button id="send-btn">Send to Extension</button>
+  <button id="screenshot-btn">Screenshot</button>
+  <br><br>
+  <img id="screenshot" style="max-width: 100%;" />
+  <script src="renderer.js"></script>
+</body>
+
 </html>
