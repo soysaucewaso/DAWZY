@@ -1,5 +1,5 @@
 const { contextBridge, ipcRenderer, desktopCapturer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  takeScreenshot: () => ipcRenderer.invoke('takeScreenshot')
+  takeScreenshot: (userMsg) => ipcRenderer.invoke('takeScreenshot', userMsg)
 });

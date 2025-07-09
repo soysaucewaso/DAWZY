@@ -3,17 +3,17 @@ const path = require('node:path');
 const { windowManager } = require('node-window-manager');
 const {existsSync} = require("fs");
 const {execFile} = require('child_process')
-ipcMain.handle('takeScreenshot', async () => {
+ipcMain.handle('takeScreenshot', async (_event, user_msg) => {
   const venvPython = process.platform === 'win32'
   ? path.join(__dirname, 'venv', 'Scripts', 'python.exe')
   : path.join(__dirname, 'venv', 'bin', 'python');
   const pythonPath = existsSync(venvPython) ? venvPython : 'python3';
   return new Promise((resolve, reject) => {
-    execFile(pythonPath, ['take_screenshot.py'], (error, stdout, stderr) => {
+    execFile(pythonPath, ['take_screenshot.py', user_msg], (error, stdout, stderr) => {
       if (error) {
         reject(`❌ Error: ${stderr}`);
       } else {
-        resolve(`✅ Success: ${stdout}`);
+        resolve(stdout.trim());
       }
     });
   });

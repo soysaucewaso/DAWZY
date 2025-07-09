@@ -6,11 +6,12 @@ window.addEventListener('DOMContentLoaded', () => {
       body: msg
     });
   };
-  const screenshotImage = document.getElementById('screenshot')
+  const userMsg = document.getElementById('chat-input')
+  const assistantResponse = document.getElementById('assistant_response')
   document.getElementById('screenshot-btn').onclick = async () => {
     try {
-      const imageUrl = await window.electronAPI.takeScreenshot();
-      screenshotImage.src = imageUrl;
+      const response = await window.electronAPI.takeScreenshot(userMsg.textContent);
+      assistantResponse.textContent = response;
     } catch (error) {
       console.error('Failed to capture screenshot:', error);
       alert('Failed to capture screenshot. See console for details.');
