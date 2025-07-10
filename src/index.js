@@ -4,10 +4,13 @@ const { windowManager } = require('node-window-manager');
 const {existsSync} = require("fs");
 const {execFile} = require('child_process')
 ipcMain.handle('takeScreenshot', async (_event, user_msg) => {
+  console.log('ipc called')
+  console.log(user_msg)
   const venvPython = process.platform === 'win32'
   ? path.join(__dirname, 'venv', 'Scripts', 'python.exe')
   : path.join(__dirname, 'venv', 'bin', 'python');
   const pythonPath = existsSync(venvPython) ? venvPython : 'python3';
+  console.log(`Sending query: ${user_msg} to AI assistant`)
   return new Promise((resolve, reject) => {
     execFile(pythonPath, ['take_screenshot.py', user_msg], (error, stdout, stderr) => {
       if (error) {
