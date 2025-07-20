@@ -12,7 +12,7 @@ ipcMain.handle('takeScreenshot', async (_event, user_msg) => {
   const pythonPath = existsSync(venvPython) ? venvPython : 'python3';
   console.log(`Sending query: ${user_msg} to AI assistant`)
   return new Promise((resolve, reject) => {
-    execFile(pythonPath, ['take_screenshot.py', user_msg], (error, stdout, stderr) => {
+    execFile(pythonPath, ['chat.py', user_msg], (error, stdout, stderr) => {
       if (error) {
         reject(`❌ Error: ${stderr}`);
       } else {
