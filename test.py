@@ -1,17 +1,24 @@
 import requests
+import mcpserver
 
-def get_html(url):
-    try:
-        response = requests.get(url)
-        response.raise_for_status()  # Raise exception for HTTP errors
-        return response.text  # HTML content
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching {url}: {e}")
-        return None
+def main():
+    mcpserver.set_param(0,1,15,1)
 
-# Example usage
 if __name__ == "__main__":
-    url = ""
-    html_content = get_html(url)
-    if html_content:
-        print(html_content)  # Print the first 1000 characters
+    main()
+    
+# def get_html(url):
+#     try:
+#         response = requests.get(url)
+#         response.raise_for_status()  # Raise exception for HTTP errors
+#         return response.text  # HTML content
+#     except requests.exceptions.RequestException as e:
+#         print(f"Error fetching {url}: {e}")
+#         return None
+
+# # Example usage
+# # if __name__ == "__main__":
+# #     url = ""
+# #     html_content = get_html(url)
+# #     if html_content:
+# #         print(html_content)  # Print the first 1000 characters
