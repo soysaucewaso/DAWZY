@@ -8,7 +8,7 @@ window.addEventListener('DOMContentLoaded', () => {
   };
   const userMsg = document.getElementById('chat-input')
   const assistantResponse = document.getElementById('assistant_response')
-  document.getElementById('screenshot-btn').onclick = async () => {
+  document.getElementById('query-btn').onclick = async () => {
     console.log(userMsg)
     try {
       const response = await window.electronAPI.takeScreenshot(userMsg.value);
