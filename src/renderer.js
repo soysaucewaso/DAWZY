@@ -1,11 +1,12 @@
+console.log('renderer loaded')
 window.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('send-btn').onclick = function() {
-    const msg = document.getElementById('chat-input').value;
-    fetch('http://localhost:5005/message', {
-      method: 'POST',
-      body: msg
-    });
-  };
+  // document.getElementById('send-btn').onclick = function() {
+  //   const msg = document.getElementById('chat-input').value;
+  //   fetch('http://localhost:5005/message', {
+  //     method: 'POST',
+  //     body: msg
+  //   });
+  // };
   const userMsg = document.getElementById('chat-input')
   const assistantResponse = document.getElementById('assistant_response')
   document.getElementById('query-btn').onclick = async () => {
