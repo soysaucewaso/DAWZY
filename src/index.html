@@ -1,21 +1,40 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="UTF-8" />
-  <title>Hello World!</title>
+  <title>Dawzy Chat</title>
   <link rel="stylesheet" href="index.css" />
 </head>
-
 <body>
-  <h1>DAWZY</h1>
-  <p>Tell AI what you want to do in REAPER</p>
-  <input id="chat-input" type="text" placeholder="Type a message..." />
-  <!-- <button id="send-btn">Query AI</button> -->
-  <button id="query-btn">Query AI</button>
-  <br><br>
-  <p id="assistant_response">...</p>
+  <div class="chat-container">
+    <div class="chat-header">
+      <h1>DAWZY</h1>
+      <p>AI Assistant for REAPER</p>
+    </div>
+    
+    <div id="chat-messages" class="chat-messages">
+      <!-- Messages will be added here by JavaScript -->
+    </div>
+    
+    <div class="chat-input-container">
+      <input 
+        type="text" 
+        id="chat-input" 
+        placeholder="Type your message here..." 
+        autocomplete="off"
+      />
+      <button id="query-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+  </div>
+  
   <script src="renderer.js"></script>
+</body>
+</html>
 </body>
 
 </html>

@@ -59,7 +59,7 @@ function createChatbotWindow(dawBounds) {
 
 function updateChatbotWindow() {
   const dawWindow = findDAWWindow();
-  const CHATBOT_WIDTH = 300;
+  const CHATBOT_WIDTH = 600;
 
   if (dawWindow) {
     const bounds = dawWindow.getBounds();
@@ -120,7 +120,7 @@ app.whenReady().then(() => {
       updateChatbotWindow();
     }
   });
-  chatbotWindow.webContents.openDevTools()
+  // chatbotWindow.webContents.openDevTools()
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common

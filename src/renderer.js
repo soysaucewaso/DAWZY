@@ -1,25 +1,148 @@
-console.log('renderer loaded')
-window.addEventListener('DOMContentLoaded', () => {
-  // document.getElementById('send-btn').onclick = function() {
-  //   const msg = document.getElementById('chat-input').value;
-  //   fetch('http://localhost:5005/message', {
-  //     method: 'POST',
-  //     body: msg
-  //   });
-  // };
-  const userMsg = document.getElementById('chat-input')
-  const assistantResponse = document.getElementById('assistant_response')
-  document.getElementById('query-btn').onclick = async () => {
-    console.log(userMsg)
-    try {
-      const response = await window.electronAPI.takeScreenshot(userMsg.value);
-      assistantResponse.textContent = response;
-    } catch (error) {
-      console.error('Failed to capture screenshot:', error);
-      alert('Failed to capture screenshot. See console for details.');
+// Chat functionality with persistent message history
+let chatHistory = [];
+const CHAT_HISTORY_KEY = 'dawzy_chat_history';
+const CHAT_HISTORY_LIMIT = 100; // Maximum number of messages to store
+
+// DOM Elements
+const chatMessages = document.getElementById('chat-messages');
+const chatInput = document.getElementById('chat-input');
+const queryBtn = document.getElementById('query-btn');
+
+// Load chat history from localStorage
+function loadChatHistory() {
+  try {
+    const savedHistory = localStorage.getItem(CHAT_HISTORY_KEY);
+    if (savedHistory) {
+      chatHistory = JSON.parse(savedHistory);
+      // Filter out any typing indicators that might have been saved
+      chatHistory = chatHistory.filter(msg => msg.sender !== 'assistant-typing');
+      // Render all messages
+      chatHistory.forEach(msg => addMessageToChat(msg.sender, msg.text, false));
+      // Scroll to bottom
+      setTimeout(() => {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }, 100);
+    }
+  } catch (error) {
+    console.error('Error loading chat history:', error);
+  }
+}
+
+// Save chat history to localStorage
+function saveChatHistory() {
+  try {
+    // Keep only the most recent messages up to the limit
+    if (chatHistory.length > CHAT_HISTORY_LIMIT) {
+      chatHistory = chatHistory.slice(-CHAT_HISTORY_LIMIT);
+    }
+    localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(chatHistory));
+  } catch (error) {
+    console.error('Error saving chat history:', error);
+  }
+}
+
+// Add or update a message in the chat UI
+function addMessageToChat(sender, text, saveToHistory = true, messageId = null) {
+  let messageElement;
+  
+  if (messageId && messageId in chatMessages.children) {
+    // Update existing message
+    messageElement = chatMessages.children[messageId];
+    messageElement.textContent = text;
+  } else {
+    // Create new message element
+    messageElement = document.createElement('div');
+    messageElement.className = `message ${sender}`;
+    messageElement.textContent = text;
+    
+    // Add to chat
+    chatMessages.appendChild(messageElement);
+    
+    // Add to history if needed
+    if (saveToHistory && sender !== 'assistant-typing') {
+      // Only save non-typing messages to history
+      const messageData = { 
+        sender, 
+        text, 
+        timestamp: new Date().toISOString() 
+      };
+      chatHistory.push(messageData);
+      saveChatHistory();
     }
   }
+  
+  // Scroll to bottom
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  
+  return messageElement;
+}
 
+// Send message to the assistant
+async function sendMessage() {
+  const message = chatInput.value.trim();
+  if (!message) return;
+  
+  // Clear input
+  chatInput.value = '';
+  
+  // Add user message to chat
+  addMessageToChat('user', message);
+  
+  try {
+    // Create typing indicator with animated dots
+    const typingIndicator = document.createElement('div');
+    typingIndicator.className = 'message assistant-typing';
+    typingIndicator.innerHTML = `
+      <span class="typing-dot"></span>
+      <span class="typing-dot"></span>
+      <span class="typing-dot"></span>
+    `;
+    chatMessages.appendChild(typingIndicator);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    // Get the index of the typing indicator message
+    const messageIndex = Array.from(chatMessages.children).indexOf(typingIndicator);
+    
+    try {
+      // Send message to main process and get response
+      const response = await window.electronAPI.takeScreenshot(message, messageIndex);
+      
+      // Update the typing indicator with the actual response
+      addMessageToChat('assistant', response, true, messageIndex);
+    } catch (error) {
+      console.error('Error getting response:', error);
+      // Update the typing indicator with error message
+      addMessageToChat('assistant', 'Sorry, I encountered an error. Please try again.', true, messageIndex);
+    }
+  } catch (error) {
+    console.error('Error showing typing indicator:', error);
+    // Fallback in case typing indicator fails
+    addMessageToChat('assistant', 'Sorry, something went wrong. Please try again.');
+  }
+}
 
+// Event Listeners
+window.addEventListener('DOMContentLoaded', () => {
+  // Load previous chat history
+  loadChatHistory();
+  
+  // Send message on button click
+  queryBtn.addEventListener('click', sendMessage);
+  
+  // Send message on Enter key (but allow Shift+Enter for new lines)
+  chatInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+  
+  // Focus the input field when the app loads
+  chatInput.focus();
+});
+
+// Handle window resize to ensure proper scrolling
+window.addEventListener('resize', () => {
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 });
 
