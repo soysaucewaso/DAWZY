@@ -121,6 +121,27 @@ async function sendMessage() {
   }
 }
 
+// Reset chat history
+function resetChat() {
+  if (confirm('Are you sure you want to clear all chat history? This cannot be undone.')) {
+    // Clear the chat UI
+    chatMessages.innerHTML = '';
+    
+    // Clear the chat history array
+    chatHistory = [];
+    
+    // Remove from localStorage
+    localStorage.removeItem(CHAT_HISTORY_KEY);
+    
+    // Add a system message to indicate the chat was cleared
+    const systemMessage = document.createElement('div');
+    systemMessage.className = 'message system';
+    systemMessage.textContent = 'Chat history has been cleared';
+    chatMessages.appendChild(systemMessage);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+}
+
 // Event Listeners
 window.addEventListener('DOMContentLoaded', () => {
   // Load previous chat history
@@ -136,6 +157,9 @@ window.addEventListener('DOMContentLoaded', () => {
       sendMessage();
     }
   });
+  
+  // Add reset chat functionality
+  document.getElementById('reset-chat').addEventListener('click', resetChat);
   
   // Focus the input field when the app loads
   chatInput.focus();

@@ -8,8 +8,20 @@
 <body>
   <div class="chat-container">
     <div class="chat-header">
-      <h1>DAWZY</h1>
-      <p>AI Assistant for REAPER</p>
+      <div class="header-content">
+        <div>
+          <h1>DAWZY</h1>
+          <p>AI Assistant for REAPER</p>
+        </div>
+        <button id="reset-chat" title="Clear chat history">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 6h18"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            <path d="M10 11v6"/>
+            <path d="M14 11v6"/>
+          </svg>
+        </button>
+      </div>
     </div>
     
     <div id="chat-messages" class="chat-messages">
