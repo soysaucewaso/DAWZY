@@ -1,6 +1,7 @@
 from mcp.server.fastmcp import FastMCP
 from pydantic import BaseModel
 
+import os
 import reapy
 import math
 
@@ -47,6 +48,19 @@ def set_param(track_index, fx_index, param_index, target_value):
     params[param_index] = slider
     
 
+def run_get_state():
+    with reapy.inside_reaper():
+        cid = reapy.reascript_api.NamedCommandLookup('_RS61e36837be3b165b26ecbb73bd32311cfaaea9ac')
+        reapy.reascript_api.Main_OnCommand(cid, 0)
+
+        path = '/Users/sawyer/development/python/DAWZY_lua/get_state_output.txt'
+        # Read the result
+        if not os.path.exists(path):
+            print("Lua output file not found.")
+            exit(0)
+        with open(path, "r") as f:
+            lua_output = f.read()
+        return lua_output
 
 
 # Create an MCP server
@@ -55,7 +69,7 @@ mcp = FastMCP("demo-server", version="1.0.0")
 
 # Define the tool
 @mcp.tool()
-async def set_fx_param(track_index: int, fx_index: int, param_index: int, target_value: float):
+def set_fx_param(track_index: int, fx_index: int, param_index: int, target_value: float):
     """
     Set an FX parameter to a target value.
 
@@ -70,6 +84,33 @@ async def set_fx_param(track_index: int, fx_index: int, param_index: int, target
         f.write('called')
     set_param(track_index, fx_index, param_index, target_value)
     # return f"Set FX {fx_index}, Param {param_index} to value {target_value}."
+
+@mcp.tool()
+def add_fx(track_index: int, fx_name: str, record_fx: bool):
+    """
+    Add an FX to a track
+
+    Args:
+        track_index: Index of the Track
+        fx_name: Name of the FX to add
+        record_fx: True for pre-fader, False for post-fader 
+    """
+    track = reapy.reascript_api.GetTrack(0, 0)
+    fx_index = reapy.reascript_api.TrackFX_AddByName(track, fx_name, record_fx, -1)
+
+    # Insert your logic here (e.g., REAPER API bridge)
+    # return f"Set FX {fx_index}, Param {param_index} to value {target_value}."
+    return fx_index
+
+@mcp.resource("resource://state")
+def get_project_state() -> str:
+    with reapy.inside_reaper():
+        cid = reapy.reascript_api.NamedCommandLookup('_RS61e36837be3b165b26ecbb73bd32311cfaaea9ac')
+        reapy.reascript_api.Main_OnCommand(cid, 0)
+
+    return run_get_state()
+
+
 
 # Start the server using stdio
 if __name__ == "__main__":

@@ -2,7 +2,7 @@ import requests
 import mcpserver
 
 def main():
-    mcpserver.set_param(0,1,15,1)
+    print(mcpserver.add_fx(0,'ReaDelay (Cockos)',False))
 
 if __name__ == "__main__":
     main()

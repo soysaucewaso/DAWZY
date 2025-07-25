@@ -17,6 +17,15 @@ def run_get_state():
         cid = reapy.reascript_api.NamedCommandLookup('_RS61e36837be3b165b26ecbb73bd32311cfaaea9ac')
         reapy.reascript_api.Main_OnCommand(cid, 0)
 
+        path = '/Users/sawyer/development/python/DAWZY_lua/get_state_output.txt'
+        # Read the result
+        if not os.path.exists(path):
+            print("Lua output file not found.")
+            exit(0)
+        with open(path, "r") as f:
+            lua_output = f.read()
+        return lua_output
+
 
 def run_dynamic_lua_script():
     with reapy.inside_reaper():
@@ -26,27 +35,18 @@ def run_dynamic_lua_script():
 
 async def main():
 
-    run_get_state()
-
-    path = '/Users/sawyer/development/python/DAWZY_lua/get_state_output.txt'
-# Read the result
-    if not os.path.exists(path):
-        print("Lua output file not found.")
-        exit(0)
-    with open(path, "r") as f:
-        lua_output = f.read()
+    lua_output = run_get_state()
 
     msg = f"""
     Instructions:
     You are a REAPER ReaScript assistant that helps users understand and manipulate audio using Lua scripts.
 
-    Always respond with a short natural language explanation first. If the users makes a request which you could write a lua script to automate, also include a lua ReaScript code block using lua's ReaScript API (reaper.GetTrack(0, 0)).
+    Always respond with a short natural language explanation first. If the users makes a request which you could write a lua script to automate, also include a lua ReaScript code block using ReaScript's Lua API (reaper.GetTrack(0, 0)).
 
-    If Lua code is appropriate, include it inside a ```lua code block``` after the explanation.
+    If Lua code is appropriate, include it inside a ```lua code block``` after the explanation. In your explanation, explain the intent of the lua script without mentioning any technical details or the code itself. Try to educate the user on relevant concepts that may be unfamiliar to the user.
 
+    To add an FX like reverb to a track, instead of writing lua code, call the add_fx tool.
     To set FX parameters for a track, instead of writing lua code, call the set_fx_param tool.
-
-    Respond only with lua ReaScript code to fulfill the user's request.
 
     State:
     {lua_output}
