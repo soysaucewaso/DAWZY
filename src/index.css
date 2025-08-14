@@ -202,18 +202,29 @@ body {
   box-shadow: 0 0 0 2px rgba(110, 142, 251, 0.2);
 }
 
-#query-btn {
+/* Button group for input actions */
+.button-group {
+  display: flex;
+  gap: 8px;
+}
+
+#mic-btn,
+#query-btn,
+#whistle-btn {
   width: 48px;
   height: 48px;
   border: none;
   border-radius: 50%;
-  background: #6e8efb;
   color: white;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s, transform 0.1s;
+  transition: all 0.2s ease;
+}
+
+#query-btn {
+  background: #6e8efb;
 }
 
 #query-btn:hover {
@@ -224,9 +235,59 @@ body {
   transform: scale(0.95);
 }
 
+#mic-btn {
+  background: #f0f0f0;
+  color: #666;
+}
+
+#mic-btn:hover {
+  background: #e0e0e0;
+}
+
+#mic-btn:active {
+  transform: scale(0.95);
+}
+
+#mic-btn.active {
+  background: #ff6b6b;
+  color: white;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 107, 107, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+  }
+}
+
+#mic-btn svg,
 #query-btn svg {
   width: 20px;
   height: 20px;
+}
+#whistle-btn {
+  background: #9090be;
+  color: #fff;
+}
+
+#whistle-btn svg {
+  width: 20px;
+  height: 20px;
+  color: #fff
+}
+
+#whistle-btn:hover {
+  background: #666699;
+}
+
+#whistle-btn:active {
+  transform: scale(0.95);
 }
 
 /* Scrollbar styling */

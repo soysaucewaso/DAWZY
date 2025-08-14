@@ -1,16 +1,29 @@
-const { app, BrowserWindow, desktopCapturer, screen, ipcMain } = require('electron');
-const path = require('node:path');
-const { windowManager } = require('node-window-manager');
-const {existsSync} = require("fs");
-const {execFile} = require('child_process')
-ipcMain.handle('takeScreenshot', async (_event, user_msg) => {
-  console.log('ipc called')
-  console.log(user_msg)
+import { app, BrowserWindow, desktopCapturer, screen, ipcMain, dialog } from 'electron';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { windowManager } from 'node-window-manager';
+import { existsSync } from 'node:fs';
+import { execFile } from 'node:child_process';
+import { v1p1beta1 as speech } from '@google-cloud/speech';
+import fs from 'node:fs';
+import os from 'node:os';
+import OpenAI from 'openai';
+import player from 'play-sound';
+import { startRecording, stopRecording, transcribeFromMic, cleanupSpeechRecognition } from './speech_to_text.js';
+import { humToMIDI } from './hum_to_midi.js';
+
+// Get __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
+async function queryAI(_event, user_msg) {
+  console.log('ipc called');
   const venvPython = process.platform === 'win32'
-  ? path.join(__dirname, 'venv', 'Scripts', 'python.exe')
-  : path.join(__dirname, 'venv', 'bin', 'python');
+    ? path.join(__dirname, 'venv', 'Scripts', 'python.exe')
+    : path.join(__dirname, 'venv', 'bin', 'python');
   const pythonPath = existsSync(venvPython) ? venvPython : 'python3';
-  console.log(`Sending query: ${user_msg} to AI assistant`)
+  console.log(`Sending query: ${user_msg} to AI assistant`);
   return new Promise((resolve, reject) => {
     execFile(pythonPath, ['chat.py', user_msg], (error, stdout, stderr) => {
       if (error) {
@@ -20,13 +33,12 @@ ipcMain.handle('takeScreenshot', async (_event, user_msg) => {
       }
     });
   });
-});
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) {
-  app.quit();
 }
 
+ipcMain.handle('takeScreenshot', async (_event, user_msg) => queryAI(_event, user_msg));
+
 let chatbotWindow = null;
+let mainWindow = null; // Add this line to track the main window
 let dawWindowId = null;
 
 function findDAWWindow() {
@@ -49,7 +61,10 @@ function createChatbotWindow(dawBounds) {
     transparent: false, // Set to true for overlay style
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-
+      nodeIntegration: true,
+      contextIsolation: false,
+      enableRemoteModule: false,
+      sandbox: true
     },
     show: false, // Start hidden, show when ready
   });
@@ -85,6 +100,11 @@ function updateChatbotWindow() {
         transparent: false,
         webPreferences: {
           preload: path.join(__dirname, 'preload.js'),
+          nodeIntegration: false,
+          contextIsolation: true,
+          enableRemoteModule: false,
+          sandbox: true,
+          allowRunningInsecureContent: false
         },
         show: false,
       });
@@ -105,33 +125,48 @@ function updateChatbotWindow() {
   }
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  // createChatbotWindow();
+  // Set up IPC handlers for audio recording
+  ipcMain.handle('start-recording', () => {
+    startRecording();
+  });
 
+  ipcMain.handle('stop-recording', () => {
+      stopRecording();
+    }
+  );
+
+  ipcMain.handle('transcribe-from-mic', async () => {
+    return await transcribeFromMic();
+  });
+
+  ipcMain.handle('hum-to-midi', async () => {
+    console.log('hum2midi')
+    return await humToMIDI();
+  });
+
+
+  // Initialize and show the main window
   updateChatbotWindow();
-  setInterval(updateChatbotWindow, 1000); // Poll every second
-  // On OS X it's common to re-create a window in the app when the
+  
+  // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   app.on('activate', () => {
-    if (!chatbotWindow) {
+    if (BrowserWindow.getAllWindows().length === 0) {
       updateChatbotWindow();
     }
   });
-  // chatbotWindow.webContents.openDevTools()
 });
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+
 app.on('window-all-closed', () => {
+  cleanupSpeechRecognition();
   if (process.platform !== 'darwin') {
     app.quit();
   }
 });
 
+app.on('will-quit', () => {
+  cleanupSpeechRecognition();
+});
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.

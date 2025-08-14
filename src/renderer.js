@@ -7,6 +7,69 @@ const CHAT_HISTORY_LIMIT = 100; // Maximum number of messages to store
 const chatMessages = document.getElementById('chat-messages');
 const chatInput = document.getElementById('chat-input');
 const queryBtn = document.getElementById('query-btn');
+const micBtn = document.getElementById('mic-btn');
+const whistleBtn = document.getElementById('whistle-btn');
+
+// Speech Recognition State
+let isRecording = false;
+let finalTranscript = '';
+
+// Show a system message in the chat
+function showSystemMessage(message) {
+  const messageElement = document.createElement('div');
+  messageElement.className = 'message system';
+  messageElement.textContent = message;
+  document.getElementById('chat-messages').appendChild(messageElement);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Toggle audio recording
+async function toggleRecording(onStop) {
+  if (isRecording) {
+    stopRecording();
+    onStop();
+  }else{
+    startRecording();
+  }
+}
+
+// Start audio recording
+function startRecording() {
+  try {
+    const success = window.electronAPI.startRecording();
+    micBtn.classList.add('active');
+    isRecording = true;
+    if (!success) {
+      throw new Error('Failed to start recording');
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Error starting recording:', error);
+    throw error;
+  }
+}
+
+// Stop audio recording
+function stopRecording() {
+  if (!isRecording) return false;
+  
+  try {
+    window.electronAPI.stopRecording();
+    isRecording = false;
+    micBtn.classList.remove('active');
+  } catch (error) {
+    console.error('Error stopping recording:', error);
+    throw error;
+  }
+}
+
+async function sendAudioMsg(){
+    const transcribed = await window.electronAPI.transcribeFromMic();
+    sendMessage(transcribed)
+    return transcribed;
+}
+
 
 // Load chat history from localStorage
 function loadChatHistory() {
@@ -78,13 +141,7 @@ function addMessageToChat(sender, text, saveToHistory = true, messageId = null) 
 }
 
 // Send message to the assistant
-async function sendMessage() {
-  const message = chatInput.value.trim();
-  if (!message) return;
-  
-  // Clear input
-  chatInput.value = '';
-  
+async function sendMessage(message) {
   // Add user message to chat
   addMessageToChat('user', message);
   
@@ -147,14 +204,42 @@ window.addEventListener('DOMContentLoaded', () => {
   // Load previous chat history
   loadChatHistory();
   
-  // Send message on button click
-  queryBtn.addEventListener('click', sendMessage);
+  // Set up event listeners
+  queryBtn.addEventListener('click', () => {
+    const message = chatInput.value.trim();
+    if (!message) return;
+    chatInput.value = '';
+    sendMessage(message);
+  });
+  micBtn.addEventListener('click', () => toggleRecording(sendAudioMsg));
+
+  whistleBtn.addEventListener('click', () => {
+    toggleRecording(humToMIDI);
+  });
+  
+  // Listen for recording errors
+  window.electronAPI.on('recording-error', (error) => {
+    console.error('Recording error:', error);
+    showSystemMessage(`Recording error: ${error}`);
+    isRecording = false;
+    micBtn.classList.remove('active');
+  });
+  
+  // Clean up when the window is closed
+  window.addEventListener('beforeunload', () => {
+    if (isRecording) {
+      stopRecording().catch(console.error);
+    }
+  });
   
   // Send message on Enter key (but allow Shift+Enter for new lines)
   chatInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      sendMessage();
+      const message = chatInput.value.trim();
+      if (!message) return;
+      chatInput.value = '';
+      sendMessage(message);
     }
   });
   
@@ -170,3 +255,7 @@ window.addEventListener('resize', () => {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 });
 
+async function humToMIDI(){
+    await window.electronAPI.humToMIDI();
+}
+    

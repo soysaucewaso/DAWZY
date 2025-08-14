@@ -2,6 +2,7 @@
   "name": "chatbot",
   "productName": "chatbot",
   "version": "1.0.0",
+  "type": "module",
   "description": "My Electron application description",
   "main": "src/index.js",
   "scripts": {
@@ -18,9 +19,16 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@google-cloud/speech": "^7.2.0",
     "@modelcontextprotocol/sdk": "^1.16.0",
+    "@spotify/basic-pitch": "^1.0.1",
+    "@tensorflow/tfjs-node": "^4.22.0",
     "electron-squirrel-startup": "^1.0.1",
-    "node-window-manager": "^2.2.4"
+    "node-record-lpcm16": "^1.0.1",
+    "node-window-manager": "^2.2.4",
+    "openai": "^5.12.2",
+    "play-sound": "^1.1.6",
+    "web-audio-api": "^0.2.2"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.8.1",
