@@ -1,2 +1,6 @@
 pyautogui
 basic-pitch
+python-reapy
+openai
+mcp
+requests
