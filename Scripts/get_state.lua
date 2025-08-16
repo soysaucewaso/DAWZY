@@ -2,11 +2,7 @@
 -- @version 1.1
 -- @author ChatGPT
 
-
-local buffer = {}
 function msg(s)
-  table.insert(buffer, tostring(s) .. "\n")
-  
 	reaper.ShowConsoleMsg(tostring(s) .. "\n")
 end
 
@@ -26,7 +22,7 @@ if (state & 4) ~= 0 then
 	table.insert(state_str, "Recording")
 end
 
-msg("Project states: " .. table.concat(state_str, ", ") .. "\n")
+reaper.ShowConsoleMsg("Project states: " .. table.concat(state_str, ", ") .. "\n")
 
 msg("current play position: " .. reaper.GetPlayPosition() .. " seconds\n")
 
@@ -46,7 +42,7 @@ local context_str = ({
 	[2] = "Envelopes",
 })[context] or "Unknown"
 
-msg("Cursor Context: " .. context_str .. "\n")
+reaper.ShowConsoleMsg("Cursor Context: " .. context_str .. "\n")
 
 local track_count = reaper.CountTracks(0)
 msg("🎼 Project Track Overview (" .. track_count .. " tracks):\n")
@@ -59,9 +55,8 @@ for t = 0, track_count - 1 do
 		track_name = "(Unnamed Track)"
 	end
 
-	msg("Track " .. (t + 1) .. ": " .. track_name .. "")
+	msg("Track #" .. (t + 1) .. " with index " .. t .. ": " .. track_name .. "")
 
-  -- excessively verbose
 	-- local _, buf = reaper.GetTrackStateChunk(track, "", false)
 	-- msg("State: " .. buf .. "\n")
 
@@ -80,11 +75,14 @@ for t = 0, track_count - 1 do
 		msg("  🎛 FX Chain:")
 		for j = 0, fx_count - 1 do
 			local _, fx_name = reaper.TrackFX_GetFXName(track, j, "")
-			msg("    ➤ FX " .. (j + 1) .. ": " .. fx_name)
+			msg("    ➤ FX with index " .. j .. ": " .. fx_name)
 
 			local param_count = reaper.TrackFX_GetNumParams(track, j)
 			for p = 0, param_count - 1 do
 				local _, param_name = reaper.TrackFX_GetParamName(track, j, p, "")
+
+        -- remove leading '1: '
+        param_name = string.gsub(param_name, "^%d:%s*", "")
 				local norm_val = reaper.TrackFX_GetParamNormalized(track, j, p)
 				local success, formatted_curr = reaper.TrackFX_FormatParamValueNormalized(track, j, p, norm_val, "")
 
@@ -93,7 +91,7 @@ for t = 0, track_count - 1 do
 
 				msg(
 					string.format(
-						"        Param #" .. tostring(p) .. ", %s: %s. Range: (%s to %s)",
+						"        Param with index " .. tostring(p) .. ": %s: %s. Range: (%s to %s)",
 						param_name,
 						formatted_curr,
 						formatted_min,
@@ -148,6 +146,7 @@ for t = 0, track_count - 1 do
 			table.insert(results, string.format("%-35s: %s", p.label, tostring(val)))
 		end
 
+    msg('Media Item ' .. i)
 		-- Output
 		msg(table.concat(results, "\n") .. "\n")
 	end
@@ -218,10 +217,9 @@ for i = 0, numMarkers - 1 do
 	local sigStr = string.format("Time Sig: %d/%d", timesig_num, timesig_denom)
 	local modeStr = lineartempo and "(Linear)" or "(Instant)"
 
-	msg(string.format("Marker %d: %s | %s | %s %s\n", i + 1, timeStr, tempoStr, sigStr, modeStr))
+	reaper.ShowConsoleMsg(string.format("Marker %d: %s | %s | %s %s\n", i + 1, timeStr, tempoStr, sigStr, modeStr))
 end
-
-local path = '/Users/sawyer/development/python/DAWZY_lua/get_state_output.txt'
+local path = '/Users/sawyer/development/electron/Dawzy-chatbot/get_state_output.txt'
 
 local result = table.concat(buffer)
 local file = io.open(path, "w")

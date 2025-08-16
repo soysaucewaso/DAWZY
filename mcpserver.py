@@ -1,6 +1,8 @@
 from mcp.server.fastmcp import FastMCP
 from pydantic import BaseModel
 
+import sys
+import asyncio
 import os
 import reapy
 import math
@@ -45,6 +47,8 @@ def set_param(track_index, fx_index, param_index, target_value):
         percent = (target_value - true_mi) / (true_ma - true_mi)
         slider = percent * (slider_ma - slider_mi)
         print((true_mi, true_ma, slider, percent))
+    with open('buffer.txt', 'w') as f:
+        f.write('slider: ' + str(slider))
     params[param_index] = slider
     
 
@@ -59,7 +63,7 @@ def run_get_state():
             print("Lua output file not found.")
             exit(0)
         with open(path, "r") as f:
-            lua_output = f.read()
+            lua_output = str(f.read())
         return lua_output
 
 
@@ -80,27 +84,34 @@ def set_fx_param(track_index: int, fx_index: int, param_index: int, target_value
         target_value: The value to set
     """
     # Insert your logic here (e.g., REAPER API bridge)
-    with open('buffer.txt', 'w') as f:
-        f.write('called')
-    set_param(track_index, fx_index, param_index, target_value)
-    # return f"Set FX {fx_index}, Param {param_index} to value {target_value}."
+    try:
+        set_param(track_index, fx_index, param_index, target_value)
 
+        return f"Successfully set FX {fx_index}, Param {param_index} to value {target_value}."
+
+    except Exception as e:
+        return f'Failed to set FX Param: {str(e)}'
+
+'''
 @mcp.tool()
-def add_fx(track_index: int, fx_name: str, record_fx: bool):
+def add_fx(track_index: int, fx_name: str):
     """
     Add an FX to a track
 
     Args:
         track_index: Index of the Track
         fx_name: Name of the FX to add
-        record_fx: True for pre-fader, False for post-fader 
     """
-    track = reapy.reascript_api.GetTrack(0, 0)
-    fx_index = reapy.reascript_api.TrackFX_AddByName(track, fx_name, record_fx, -1)
+    if "(Cockos)" not in fx_name:
+        fx_name += " (Cockos)"
 
-    # Insert your logic here (e.g., REAPER API bridge)
-    # return f"Set FX {fx_index}, Param {param_index} to value {target_value}."
-    return fx_index
+    track = reapy.reascript_api.GetTrack(0, track_index)
+    fx_index = reapy.reascript_api.TrackFX_AddByName(track, fx_name, False, -1)
+    msg = f"Added {fx_name} to track {track_index} at fx index {fx_index}"
+    if fx_index == -1: 
+        msg = f"Failed to add {fx_name} to track {track_index}"
+    return msg
+'''
 
 @mcp.resource("resource://state")
 def get_project_state() -> str:
@@ -110,7 +121,44 @@ def get_project_state() -> str:
 
     return run_get_state()
 
+    
 
+async def generate(description: str):
+    # audiocraft uses a different python environment bc of dep conflicts
+    py_path = '/Users/sawyer/miniconda/envs/audiocraft/bin/python'
+    beat_path = '/Users/sawyer/development/electron/Dawzy-chatbot/beat.wav'
+    process = await asyncio.create_subprocess_exec(
+        'rm', beat_path
+    )
+    await process.communicate()
+    process = await asyncio.create_subprocess_exec(
+        py_path, 'beat_generation.py', description,
+    )
+
+    await process.communicate()
+    if os.path.exists(beat_path):
+        py_path = sys.executable
+        process = await asyncio.create_subprocess_exec(
+            py_path, 'add_media.py', beat_path
+        )
+        await process.communicate()
+        return "Successfully generated beat."
+    else:
+        return "Failed to generate beat."
+
+    
+@mcp.tool()
+async def generate_beat(description: str):
+    """
+    Generate a beat with AI and add it to REAPER
+
+    Args:
+        description: Description of the beat
+    """
+    try:
+        return await generate(description)
+    except Exception as e:
+        return f'Failed to generate beat: {str(e)}'
 
 # Start the server using stdio
 if __name__ == "__main__":

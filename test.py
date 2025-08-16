@@ -1,11 +1,15 @@
 import requests
+
 import mcpserver
 
-def main():
-    print(mcpserver.add_fx(0,'ReaDelay (Cockos)',False))
+import asyncio
+
+async def main():
+    print(mcpserver.add_fx(0,'ReaSynth',False))
+    # print(await mcpserver.generate_beat('hip hop beat with a subtle trumpet melody'))
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
     
 # def get_html(url):
 #     try:

@@ -20,7 +20,9 @@ class MCPClient:
         self.exit_stack = AsyncExitStack()
 
         openai_api_key = os.getenv("OPENAI_API_KEY")
-        self.openai = OpenAI(api_key=openai_api_key)
+        self.openai = OpenAI(api_key=openai_api_key,
+        # base_url="https://api.deepinfra.com/v1/openai"
+        )
 
     async def connect_to_server(self, server_script_path: str):
         """Connect to an MCP server
@@ -64,10 +66,12 @@ class MCPClient:
             }
         } for tool in response.tools]
         # print(available_tools)
-
+        # model_name = "Qwen/Qwen3-Coder-480B-A35B-Instruct"
+        model_name = 'gpt-5-mini'
+        # model_name = "Qwen/Qwen3-235B-A22B-Instruct-2507"
         # Initial OpenAI API call
         response = self.openai.chat.completions.create(
-            model="o4-mini",
+            model=model_name,
             messages=messages,
             tools=available_tools,
             tool_choice="auto",
@@ -103,6 +107,8 @@ class MCPClient:
                     ]
                 })
 
+                print(len(reply.tool_calls))
+                print(reply.tool_calls)
                 for tool_call in reply.tool_calls:
                     tool_name = tool_call.function.name
                     tool_args = tool_call.function.arguments
@@ -111,18 +117,24 @@ class MCPClient:
                     parsed_args = json.loads(tool_args)
                     result = await self.session.call_tool(tool_name, parsed_args)
                     final_text.append(f"[Calling tool {tool_name} with args {parsed_args}]")
+                    if isinstance(result.content, list):
+                        tool_output_str = "\n".join(
+                            item.text for item in result.content if getattr(item, "type", None) == "text"
+                        )
+                    else:
+                        tool_output_str = str(result.content)
 
                     # Add tool response message
                     messages.append({
                         "role": "tool",
                         "tool_call_id": tool_call.id,
                         "name": tool_name,
-                        "content": result.content,
+                        "content": tool_output_str,
                     })
 
                 # Get next response from OpenAI
                 response = self.openai.chat.completions.create(
-                    model="gpt-4o",
+                    model=model_name,
                     messages=messages,
                 )
             else:

@@ -17,7 +17,7 @@ def run_get_state():
         cid = reapy.reascript_api.NamedCommandLookup('_RS61e36837be3b165b26ecbb73bd32311cfaaea9ac')
         reapy.reascript_api.Main_OnCommand(cid, 0)
 
-        path = '/Users/sawyer/development/python/DAWZY_lua/get_state_output.txt'
+        path = '/Users/sawyer/development/electron/Dawzy-chatbot/get_state_output.txt'
         # Read the result
         if not os.path.exists(path):
             print("Lua output file not found.")
@@ -48,8 +48,9 @@ Instructions:
     2. Use simple examples, metaphors, or analogies when helpful. Avoid long blocks of explanation.
     3. Teach one idea at a time. Break down concepts across multiple turns if needed.
     4. If the task can be automated, include a short Lua script inside a ```lua block``` after the explanation — but only if it's helpful and requested.
-    5. Don’t include Lua code if the user is adding FX — call the add_fx tool instead.
-    6. Don’t include Lua code if the user is adjusting FX parameters — call the set_fx_param tool instead.
+    5. Don’t include Lua code if the user is adjusting FX parameters — call the set_fx_param tool instead.
+    6. ReaScript uses 0-indexing, but the GUI uses 1-indexing. When the user asks for an update to track #1, the ReaScript track index is 0.
+    7. FX parameter names and indexes can be found in the state below
     Your goal is to make audio scripting and concepts feel accessible, not overwhelming. Keep answers short, helpful, and easy to follow.
 
 State:

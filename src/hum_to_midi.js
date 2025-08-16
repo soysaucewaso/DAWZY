@@ -6,6 +6,6 @@ export async function humToMIDI(){
     // basic pitch is installed with pip install basic-pitch
     await exec('basic-pitch . ./input.wav');
 
-    await exec('python add_midi.py /Users/sawyer/development/electron/Dawzy-chatbot/input_basic_pitch.mid')
+    await exec('python /Users/sawyer/development/electron/Dawzy-chatbot/add_media.py /Users/sawyer/development/electron/Dawzy-chatbot/input_basic_pitch.mid')
     console.log('inserted successfully')
 }
