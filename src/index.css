@@ -290,6 +290,12 @@ body {
   transform: scale(0.95);
 }
 
+#whistle-btn.active {
+  background: #ff6b6b;
+  color: white;
+  animation: pulse 1.5s infinite;
+}
+
 /* Scrollbar styling */
 ::-webkit-scrollbar {
   width: 8px;

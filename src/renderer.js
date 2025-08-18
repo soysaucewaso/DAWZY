@@ -24,12 +24,16 @@ function showSystemMessage(message) {
 }
 
 // Toggle audio recording
-async function toggleRecording(onStop) {
+async function toggleRecording(onStop, isWhistle = false) {
   if (isRecording) {
     stopRecording();
     onStop();
-  }else{
-    startRecording();
+  } else {
+    if (startRecording()) {
+      // Update the active state for the correct button
+      const activeButton = isWhistle ? whistleBtn : micBtn;
+      activeButton.classList.add('active');
+    }
   }
 }
 
@@ -37,7 +41,6 @@ async function toggleRecording(onStop) {
 function startRecording() {
   try {
     const success = window.electronAPI.startRecording();
-    micBtn.classList.add('active');
     isRecording = true;
     if (!success) {
       throw new Error('Failed to start recording');
@@ -57,7 +60,9 @@ function stopRecording() {
   try {
     window.electronAPI.stopRecording();
     isRecording = false;
+    // Remove active state from both buttons to be safe
     micBtn.classList.remove('active');
+    whistleBtn.classList.remove('active');
   } catch (error) {
     console.error('Error stopping recording:', error);
     throw error;
@@ -211,10 +216,10 @@ window.addEventListener('DOMContentLoaded', () => {
     chatInput.value = '';
     sendMessage(message);
   });
-  micBtn.addEventListener('click', () => toggleRecording(sendAudioMsg));
+  micBtn.addEventListener('click', () => toggleRecording(sendAudioMsg, false));
 
   whistleBtn.addEventListener('click', () => {
-    toggleRecording(humToMIDI);
+    toggleRecording(humToMIDI, true);
   });
   
   // Listen for recording errors
