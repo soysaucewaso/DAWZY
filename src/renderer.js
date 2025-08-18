@@ -110,18 +110,26 @@ function saveChatHistory() {
 }
 
 // Add or update a message in the chat UI
-function addMessageToChat(sender, text, saveToHistory = true, messageId = null) {
+function addMessageToChat(sender, text, saveToHistory = true, messageId = null, isItalic = false) {
   let messageElement;
   
   if (messageId && messageId in chatMessages.children) {
     // Update existing message
     messageElement = chatMessages.children[messageId];
     messageElement.textContent = text;
+    if (isItalic) {
+      messageElement.style.fontStyle = 'italic';
+    } else {
+      messageElement.style.fontStyle = 'normal';
+    }
   } else {
     // Create new message element
     messageElement = document.createElement('div');
     messageElement.className = `message ${sender}`;
     messageElement.textContent = text;
+    if (isItalic) {
+      messageElement.style.fontStyle = 'italic';
+    }
     
     // Add to chat
     chatMessages.appendChild(messageElement);
@@ -261,6 +269,17 @@ window.addEventListener('resize', () => {
 });
 
 async function humToMIDI(){
-    await window.electronAPI.humToMIDI();
+    // Add user message when recording starts (italicized)
+    addMessageToChat('user', 'Sent a hum', true, null, true);
+    
+    try {
+        await window.electronAPI.humToMIDI();
+        // Add assistant message when MIDI is successfully added to REAPER (italicized)
+        addMessageToChat('assistant', 'Added MIDI track to REAPER', true, null, true);
+    } catch (error) {
+        console.error('Error in humToMIDI:', error);
+        // Error message (not italicized)
+        addMessageToChat('assistant', 'Failed to process hum. Please try again.');
+    }
 }
     
