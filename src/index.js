@@ -11,18 +11,19 @@ import OpenAI from 'openai';
 import player from 'play-sound';
 import { startRecording, stopRecording, transcribeFromMic, cleanupSpeechRecognition } from './speech_to_text.js';
 import { humToMIDI } from './hum_to_midi.js';
+import subprocess from 'node:child_process';
 
 // Get __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const venvPython = process.platform === 'win32'
+  ? path.join(__dirname, 'venv', 'Scripts', 'python.exe')
+  : path.join(__dirname, 'venv', 'bin', 'python');
+const pythonPath = existsSync(venvPython) ? venvPython : 'python3';
 
 async function queryAI(_event, user_msg) {
   console.log('ipc called');
-  const venvPython = process.platform === 'win32'
-    ? path.join(__dirname, 'venv', 'Scripts', 'python.exe')
-    : path.join(__dirname, 'venv', 'bin', 'python');
-  const pythonPath = existsSync(venvPython) ? venvPython : 'python3';
   console.log(`Sending query: ${user_msg} to AI assistant`);
   return new Promise((resolve, reject) => {
     execFile(pythonPath, ['chat.py', user_msg], (error, stdout, stderr) => {
@@ -126,6 +127,21 @@ function updateChatbotWindow() {
 }
 
 app.whenReady().then(() => {
+    // Handle undo last action
+  ipcMain.handle('undo-last-action', async () => {
+    try {
+      // Placeholder for undo logic
+      // This will be implemented based on your specific requirements
+      console.log('Undo last action requested');
+
+      await subprocess.exec(`python -c "import reapy; reapy.reascript_api.Undo_DoUndo2(0)"`);
+      return { success: true, message: 'Last action undone' };
+    } catch (error) {
+      console.error('Error in undo-last-action:', error);
+      return { success: false, message: error.message };
+    }
+  });
+
   // Set up IPC handlers for audio recording
   ipcMain.handle('start-recording', () => {
     startRecording();

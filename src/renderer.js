@@ -154,7 +154,7 @@ function addMessageToChat(sender, text, saveToHistory = true, messageId = null, 
 }
 
 // Send message to the assistant
-async function sendMessage(message) {
+async function sendMessage(message, whistle=false) {
   // Add user message to chat
   addMessageToChat('user', message);
   
@@ -174,8 +174,14 @@ async function sendMessage(message) {
     const messageIndex = Array.from(chatMessages.children).indexOf(typingIndicator);
     
     try {
+      let response;
+      if (whistle) {
+        await window.electronAPI.humToMIDI();
+        response = 'Added MIDI track to REAPER';
+      }else{
       // Send message to main process and get response
-      const response = await window.electronAPI.takeScreenshot(message, messageIndex);
+        response = await window.electronAPI.takeScreenshot(message, messageIndex);
+      }
       
       // Update the typing indicator with the actual response
       addMessageToChat('assistant', response, true, messageIndex);
@@ -212,10 +218,23 @@ function resetChat() {
   }
 }
 
+// Handle undo action
+async function handleUndo() {
+  try {
+    await window.electronAPI.undoLastAction();
+  } catch (error) {
+    console.error('Error undoing last action:', error);
+    showSystemMessage('Failed to undo last action');
+  }
+}
+
 // Event Listeners
 window.addEventListener('DOMContentLoaded', () => {
   // Load previous chat history
   loadChatHistory();
+  
+  // Add undo button event listener
+  document.getElementById('undo-btn').addEventListener('click', handleUndo);
   
   // Set up event listeners
   queryBtn.addEventListener('click', () => {
@@ -270,16 +289,7 @@ window.addEventListener('resize', () => {
 
 async function humToMIDI(){
     // Add user message when recording starts (italicized)
-    addMessageToChat('user', 'Sent a hum', true, null, true);
+    sendMessage('Sent a hum', true)
     
-    try {
-        await window.electronAPI.humToMIDI();
-        // Add assistant message when MIDI is successfully added to REAPER (italicized)
-        addMessageToChat('assistant', 'Added MIDI track to REAPER', true, null, true);
-    } catch (error) {
-        console.error('Error in humToMIDI:', error);
-        // Error message (not italicized)
-        addMessageToChat('assistant', 'Failed to process hum. Please try again.');
-    }
 }
     

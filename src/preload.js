@@ -11,6 +11,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   transcribeFromMic: () => ipcRenderer.invoke('transcribe-from-mic'),
   humToMIDI: () => ipcRenderer.invoke('hum-to-midi'),
   
+  // Undo functionality
+  undoLastAction: () => ipcRenderer.invoke('undo-last-action'),
+  
   // Event handling
   on: (channel, callback) => {
     // Whitelist of allowed channels

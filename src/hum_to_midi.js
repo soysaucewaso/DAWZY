@@ -21,6 +21,6 @@ export async function humToMIDI() {
     await exec(`basic-pitch "${projectRoot}" "${inputWavPath}"`);
 
     // Add the generated MIDI to the DAW
-    await exec(`python "${addMediaScript}" "${inputMidiPath}"`);
+    await exec(`python "${addMediaScript}" "${inputMidiPath}" true`);
     console.log('Inserted MIDI successfully');
 }

@@ -67,7 +67,7 @@ class MCPClient:
         } for tool in response.tools]
         # print(available_tools)
         # model_name = "Qwen/Qwen3-Coder-480B-A35B-Instruct"
-        model_name = 'gpt-5-mini'
+        model_name = 'o4-mini'
         # model_name = "Qwen/Qwen3-235B-A22B-Instruct-2507"
         # Initial OpenAI API call
         response = self.openai.chat.completions.create(

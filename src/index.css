@@ -44,31 +44,40 @@ body {
   margin: 0 auto;
 }
 
-#reset-chat {
+.header-content .buttons {
+  display: flex;      /* arrange children in a row */
+  gap: 0.5rem;        /* spacing between buttons */
+}
+/* Header buttons */
+.header-content button {
   background: rgba(255, 255, 255, 0.2);
   border: none;
   border-radius: 50%;
   width: 36px;
   height: 36px;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: right;
+  justify-content: right;
   cursor: pointer;
   color: white;
   transition: all 0.2s ease;
   padding: 8px;
+  margin-left: 8px;
 }
 
-#reset-chat:hover {
+
+/* Hover and active states for header buttons */
+.header-content button:hover {
   background: rgba(255, 255, 255, 0.3);
   transform: scale(1.05);
 }
 
-#reset-chat:active {
+.header-content button:active {
   transform: scale(0.95);
 }
 
-#reset-chat svg {
+/* Icon styles for header buttons */
+.header-content button svg {
   width: 20px;
   height: 20px;
 }

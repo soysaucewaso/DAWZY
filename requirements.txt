@@ -4,3 +4,5 @@ python-reapy
 openai
 mcp
 requests
+sounddevice
+python-dotenv
