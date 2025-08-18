@@ -21,7 +21,8 @@ export function startRecording(filename = 'input.wav') {
     console.log("⚠️ Recording is already running.");
     stopRecording();
   }
-  recordingProcess = spawn('python', ['record.py', filename]);
+  const recordScript = path.join(process.cwd(), 'ReaPy_Utils', 'record.py');
+  recordingProcess = spawn('python', [recordScript, filename]);
   console.log("🎤 Recording started (Python subprocess).");
 }
 

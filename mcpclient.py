@@ -51,7 +51,7 @@ class MCPClient:
         # List available tools
         response = await self.session.list_tools()
         tools = response.tools
-        print("\nConnected to server with tools:", [tool.name for tool in tools])
+        # print("\nConnected to server with tools:", [tool.name for tool in tools])
 
     async def process_messages(self, messages: dict) -> str:
         """Process a query using OpenAI and available tools"""
@@ -107,8 +107,8 @@ class MCPClient:
                     ]
                 })
 
-                print(len(reply.tool_calls))
-                print(reply.tool_calls)
+                # print(len(reply.tool_calls))
+                # print(reply.tool_calls)
                 for tool_call in reply.tool_calls:
                     tool_name = tool_call.function.name
                     tool_args = tool_call.function.arguments

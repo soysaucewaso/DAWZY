@@ -217,7 +217,7 @@ for i = 0, numMarkers - 1 do
 	local sigStr = string.format("Time Sig: %d/%d", timesig_num, timesig_denom)
 	local modeStr = lineartempo and "(Linear)" or "(Instant)"
 
-	reaper.ShowConsoleMsg(string.format("Marker %d: %s | %s | %s %s\n", i + 1, timeStr, tempoStr, sigStr, modeStr))
+	-- reaper.ShowConsoleMsg(string.format("Marker %d: %s | %s | %s %s\n", i + 1, timeStr, tempoStr, sigStr, modeStr))
 end
 local path = '/Users/sawyer/development/electron/Dawzy-chatbot/get_state_output.txt'
 

@@ -57,7 +57,8 @@ def run_get_state():
         cid = reapy.reascript_api.NamedCommandLookup('_RS61e36837be3b165b26ecbb73bd32311cfaaea9ac')
         reapy.reascript_api.Main_OnCommand(cid, 0)
 
-        path = '/Users/sawyer/development/python/DAWZY_lua/get_state_output.txt'
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        path = os.path.join(script_dir, 'get_state_output.txt')
         # Read the result
         if not os.path.exists(path):
             print("Lua output file not found.")
@@ -125,21 +126,22 @@ def get_project_state() -> str:
 
 async def generate(description: str):
     # audiocraft uses a different python environment bc of dep conflicts
-    py_path = '/Users/sawyer/miniconda/envs/audiocraft/bin/python'
-    beat_path = '/Users/sawyer/development/electron/Dawzy-chatbot/beat.wav'
+    py_path = os.path.expanduser('~/miniconda/envs/audiocraft/bin/python')
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    beat_path = os.path.join(script_dir, 'beat.wav')
     process = await asyncio.create_subprocess_exec(
         'rm', beat_path
     )
     await process.communicate()
     process = await asyncio.create_subprocess_exec(
-        py_path, 'beat_generation.py', description,
+        py_path, os.path.join('ReaPy_Utils', 'beat_generation.py'), description,
     )
 
     await process.communicate()
     if os.path.exists(beat_path):
         py_path = sys.executable
         process = await asyncio.create_subprocess_exec(
-            py_path, 'add_media.py', beat_path
+            py_path, os.path.join('ReaPy_Utils', 'add_media.py'), beat_path
         )
         await process.communicate()
         return "Successfully generated beat."

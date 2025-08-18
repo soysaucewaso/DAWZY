@@ -5,8 +5,8 @@ import mcpserver
 import asyncio
 
 async def main():
-    print(mcpserver.add_fx(0,'ReaSynth',False))
-    # print(await mcpserver.generate_beat('hip hop beat with a subtle trumpet melody'))
+    #print(mcpserver.add_fx(0,'ReaSynth',False))
+    print(await mcpserver.generate_beat('hip hop beat with a subtle trumpet melody'))
 
 if __name__ == "__main__":
     asyncio.run(main())
