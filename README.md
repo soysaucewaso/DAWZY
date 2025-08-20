@@ -1,3 +1,5 @@
+DEMO: https://drive.google.com/file/d/1GWaVc1msmrqexjRGZf-K46xJCKLFGX3Z/view
+
 This application uses ReaScripts to interact with the REAPER DAW.
 
 It uses an LLM to dynamically generate lua scripts to perform actions in REAPER.
