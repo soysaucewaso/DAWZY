@@ -82,10 +82,12 @@ function loadChatHistory() {
     const savedHistory = localStorage.getItem(CHAT_HISTORY_KEY);
     if (savedHistory) {
       chatHistory = JSON.parse(savedHistory);
+      console.log('history')
+      console.log(chatHistory)
       // Filter out any typing indicators that might have been saved
       chatHistory = chatHistory.filter(msg => msg.sender !== 'assistant-typing');
-      // Render all messages
-      chatHistory.forEach(msg => addMessageToChat(msg.sender, msg.text, false));
+      // Render all messages with their saved formatting
+      chatHistory.forEach(msg => addMessageToChat(msg.sender, msg.text, false, null, msg.isItalic));
       // Scroll to bottom
       setTimeout(() => {
         chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -134,17 +136,18 @@ function addMessageToChat(sender, text, saveToHistory = true, messageId = null, 
     // Add to chat
     chatMessages.appendChild(messageElement);
     
-    // Add to history if needed
-    if (saveToHistory && sender !== 'assistant-typing') {
-      // Only save non-typing messages to history
-      const messageData = { 
-        sender, 
-        text, 
-        timestamp: new Date().toISOString() 
-      };
-      chatHistory.push(messageData);
-      saveChatHistory();
-    }
+  }
+  // Add to history if needed
+  if (saveToHistory && sender !== 'assistant-typing') {
+    // Only save non-typing messages to history
+    const messageData = { 
+      sender, 
+      text, 
+      isItalic: !!isItalic,
+      timestamp: new Date().toISOString() 
+    };
+    chatHistory.push(messageData);
+    saveChatHistory();
   }
   
   // Scroll to bottom
@@ -156,7 +159,7 @@ function addMessageToChat(sender, text, saveToHistory = true, messageId = null, 
 // Send message to the assistant
 async function sendMessage(message, whistle=false) {
   // Add user message to chat
-  addMessageToChat('user', message);
+  addMessageToChat('user', message, true, null, whistle);
   
   try {
     // Create typing indicator with animated dots
@@ -184,11 +187,11 @@ async function sendMessage(message, whistle=false) {
       }
       
       // Update the typing indicator with the actual response
-      addMessageToChat('assistant', response, true, messageIndex);
+      addMessageToChat('assistant', response, true, messageIndex, whistle);
     } catch (error) {
       console.error('Error getting response:', error);
       // Update the typing indicator with error message
-      addMessageToChat('assistant', 'Sorry, I encountered an error. Please try again.', true, messageIndex);
+      addMessageToChat('assistant', 'Sorry, I encountered an error. Please try again.', true, messageIndex, whistle);
     }
   } catch (error) {
     console.error('Error showing typing indicator:', error);

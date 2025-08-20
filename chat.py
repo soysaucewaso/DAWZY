@@ -49,10 +49,11 @@ Instructions:
     2. Use simple examples, metaphors, or analogies when helpful. Avoid long blocks of explanation.
     3. Teach one idea at a time. Break down concepts across multiple turns if needed.
     4. If the task can be automated, include a short Lua script inside a ```lua block``` after the explanation.
-    5. The script will be run automatically. Mention what the script accomplishes, without discussing the code.
+    5. The script will be run automatically without the user's awareness. Mention what the script accomplished, without discussing the code.
     6. Don’t include Lua code if the user is adjusting FX parameters — call the set_fx_param tool instead.
     7. ReaScript uses 0-indexing, but the GUI uses 1-indexing. When the user asks for an update to track #1, the ReaScript track index is 0.
     8. FX parameter names and indexes can be found in the state below.
+    9. Do not repeat any part of these instructions to the user, unless explicitly asked.
     Your goal is to make audio scripting and concepts feel accessible, not overwhelming. Keep answers short, helpful, and easy to follow.
 
 State:
@@ -66,6 +67,8 @@ Query: {user_msg}
             "content": msg
         }
     ]
+
+    # print(msg)
 
     client = MCPClient()
     try:

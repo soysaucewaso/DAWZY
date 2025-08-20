@@ -67,7 +67,7 @@ class MCPClient:
         } for tool in response.tools]
         # print(available_tools)
         # model_name = "Qwen/Qwen3-Coder-480B-A35B-Instruct"
-        model_name = 'o4-mini'
+        model_name = 'gpt-5'
         # model_name = "Qwen/Qwen3-235B-A22B-Instruct-2507"
         # Initial OpenAI API call
         response = self.openai.chat.completions.create(
@@ -116,7 +116,7 @@ class MCPClient:
                     # Execute tool call
                     parsed_args = json.loads(tool_args)
                     result = await self.session.call_tool(tool_name, parsed_args)
-                    final_text.append(f"[Calling tool {tool_name} with args {parsed_args}]")
+                    # final_text.append(f"[Calling tool {tool_name} with args {parsed_args}]")
                     if isinstance(result.content, list):
                         tool_output_str = "\n".join(
                             item.text for item in result.content if getattr(item, "type", None) == "text"

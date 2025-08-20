@@ -10,5 +10,5 @@ if len(sys.argv) > 2 and sys.argv[2] == 'true':
     project = reapy.Project()
     track = project.tracks[track_index]
     params = track.fxs[0].params
-    # set volume to 12 dB
-    params[5] = 4
+    # set volume to 3 dB
+    params[5] = 1.41421356237

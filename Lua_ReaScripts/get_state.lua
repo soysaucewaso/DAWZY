@@ -2,8 +2,11 @@
 -- @version 1.1
 -- @author ChatGPT
 
+local buffer = {}
 function msg(s)
-	reaper.ShowConsoleMsg(tostring(s) .. "\n")
+	-- reaper.ShowConsoleMsg(tostring(s) .. "\n")
+  table.insert(buffer, tostring(s) .. "\n")
+
 end
 
 msg(reaper.GetOS() .. "\n")
@@ -22,7 +25,7 @@ if (state & 4) ~= 0 then
 	table.insert(state_str, "Recording")
 end
 
-reaper.ShowConsoleMsg("Project states: " .. table.concat(state_str, ", ") .. "\n")
+msg("Project states: " .. table.concat(state_str, ", ") .. "\n")
 
 msg("current play position: " .. reaper.GetPlayPosition() .. " seconds\n")
 
@@ -42,7 +45,7 @@ local context_str = ({
 	[2] = "Envelopes",
 })[context] or "Unknown"
 
-reaper.ShowConsoleMsg("Cursor Context: " .. context_str .. "\n")
+msg("Cursor Context: " .. context_str .. "\n")
 
 local track_count = reaper.CountTracks(0)
 msg("🎼 Project Track Overview (" .. track_count .. " tracks):\n")
@@ -217,7 +220,7 @@ for i = 0, numMarkers - 1 do
 	local sigStr = string.format("Time Sig: %d/%d", timesig_num, timesig_denom)
 	local modeStr = lineartempo and "(Linear)" or "(Instant)"
 
-	-- reaper.ShowConsoleMsg(string.format("Marker %d: %s | %s | %s %s\n", i + 1, timeStr, tempoStr, sigStr, modeStr))
+	-- msg(string.format("Marker %d: %s | %s | %s %s\n", i + 1, timeStr, tempoStr, sigStr, modeStr))
 end
 local path = '/Users/sawyer/development/electron/Dawzy-chatbot/get_state_output.txt'
 
@@ -225,3 +228,4 @@ local result = table.concat(buffer)
 local file = io.open(path, "w")
 file:write(result)
 file:close()
+

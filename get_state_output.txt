@@ -1,0 +1,69 @@
+macOS-arm64
+
+Project states: Paused
+
+current play position: 0.3529375 seconds
+
+bpm: 170.0, bpi: 4.0
+
+Is repeat: 1
+
+Cursor Context: Track Panels
+
+🎼 Project Track Overview (1 tracks):
+
+Track #1 with index 0: beat-imported-013
+  🎹 Instrument: VSTi: ReaSynth (Cockos)
+  🎛 FX Chain:
+    ➤ FX with index 0: VSTi: ReaSynth (Cockos)
+        Param with index 0: Attack: 30.0 ms. Range: (0.0 ms to 5000.0 ms)
+        Param with index 1: Release: 8 ms. Range: (0 ms to 5000 ms)
+        Param with index 2: Square mix: 0.00. Range: (0.00 to 1.00)
+        Param with index 3: Saw mix: 0.00. Range: (0.00 to 1.00)
+        Param with index 4: Triangle mix: 0.00. Range: (0.00 to 1.00)
+        Param with index 5: Volume: +6.04 dB. Range: (-inf dB to +6.02 dB)
+        Param with index 6: Decay: 2000 ms. Range: (1 ms to 15000 ms)
+        Param with index 7: Extra sine mix: 0.00. Range: (0.00 to 1.00)
+        Param with index 8: Extra sine tuning: 0 cents. Range: (-2400 cents to 2400 cents)
+        Param with index 9: Sustain: +0.00 dB. Range: (-inf dB to +6.02 dB)
+        Param with index 10: Pulse Width: 0.50. Range: (0.10 to 0.50)
+        Param with index 11: Global detune: 0 cents. Range: (-1200 cents to 1200 cents)
+        Param with index 12: Legacy oscillator mode: 0. Range: (0 to 1)
+        Param with index 13: Portamento: 0 ms. Range: (0 ms to 1000 ms)
+        Param with index 14: Broken portamento extra sine oscillator: 0. Range: (0 to 1)
+        Param with index 15: Bypass: normal. Range: (normal to bypassed)
+        Param with index 16: Wet: 100%. Range: (0% to 100%)
+        Param with index 17: Delta: normal. Range: (normal to enabled)
+Media Item 0
+Muted (respects solo state)        : 0.0
+True mute (ignores solo)           : 0.0
+Solo override (-1=soloed, 1=unsoloed): 0.0
+Looping source enabled             : 1.0
+All takes play simultaneously      : 0.0
+Selected in arrange view           : 0.0
+Timebase mode (-1=default, 1=beats, 2=beats pos only): -1.0
+Auto-stretch with tempo changes    : 0.0
+Item locked (bitmask)              : 0.0
+Item volume (1 = +0dB)             : 1.0
+Position in seconds                : 0.0
+Length in seconds                  : 15.0
+Snap offset in seconds             : 0.0
+Manual fade-in length (s)          : 0.0
+Manual fade-out length (s)         : 0.0
+Fade-in curve shape (-1 to 1)      : 0.0
+Fade-out curve shape (-1 to 1)     : 0.0
+Auto fade-in length (-1 = none)    : 0.0
+Auto fade-out length (-1 = none)   : 0.0
+Fade-in shape (0 = linear, up to 6): 1.0
+Fade-out shape (0 = linear, up to 6): 1.0
+Item group ID (0 = none)           : 0.0
+Active take index                  : 0.0
+Item's index on its track          : 0.0
+Custom color (native int)          : 0.0
+Y position in free/fixed lane mode (0 = top): 0.0
+Height in free/fixed lane mode (1 = full track): 0.5
+Fixed lane index (read-only)       : 0.0
+Item hidden in lane view           : 0.0
+
+   (no envelopes)
+
