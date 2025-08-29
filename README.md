@@ -1,4 +1,4 @@
-DEMO: https://drive.google.com/file/d/1GWaVc1msmrqexjRGZf-K46xJCKLFGX3Z/view
+DEMO: https://youtu.be/e6vbURyIQJE
 
 This application uses ReaScripts to interact with the REAPER DAW.
 
